@@ -14,6 +14,7 @@ import PostJob from "./components/admin/PostJob.jsx";
 import Applicants from "./components/admin/Applicants.jsx";
 import ProtectedRoute from "./components/admin/ProtectedRoute.jsx";
 
+
 const appRouter = createBrowserRouter([
   {
     path: "/",
@@ -63,6 +64,10 @@ const appRouter = createBrowserRouter([
   {
     path: "/admin/jobs/create",
     element: <ProtectedRoute><PostJob /></ProtectedRoute>
+  },
+   {
+    path: "/admin/jobs/:id", 
+    element: <ProtectedRoute><PostJob /></ProtectedRoute> // Or whatever your Edit component is named
   },
   {
     path: "/admin/jobs/:id/applicants",

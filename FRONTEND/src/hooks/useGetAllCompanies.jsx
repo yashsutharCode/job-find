@@ -12,9 +12,7 @@ const useGetAllCompanies = () => {
       try {
         const res = await axios.get(
           `${COMPANY_API_END_POINT}/get`,
-          {
-            withCredentials: true, // 🔥 important for auth cookie
-          }
+          { withCredentials: true }
         );
 
         if (res.data.success) {
@@ -22,11 +20,14 @@ const useGetAllCompanies = () => {
         }
       } catch (error) {
         console.log("GET COMPANIES ERROR:", error);
+        // 🔥 FIX: If the data is deleted or not found, clear the Redux state
+        // This ensures the UI updates to show an empty list
+        dispatch(setCompanies([])); 
       }
     };
 
-    fetchCompanies(); // ✅ directly call (no condition needed)
-  }, [dispatch]); // ✅ dependency fixed
+    fetchCompanies();
+  }, [dispatch]); 
 };
 
 export default useGetAllCompanies;

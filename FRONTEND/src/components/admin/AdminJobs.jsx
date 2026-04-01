@@ -1,40 +1,32 @@
-import React, { useState } from "react";
-import Navbar from "../shared/Navbar";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
-import AdminJobsTable from "./AdminJobsTable";
-import useGetAllAdminJobs from "@/hooks/useGetAllAdminJobs";
+import React, { useState } from 'react'
+import Navbar from '../shared/Navbar'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { useNavigate } from 'react-router-dom'
+import AdminJobsTable from './AdminJobsTable'
+import useGetAllAdminJobs from '@/hooks/useGetAllAdminJobs' // Ensure import
 
 const AdminJobs = () => {
-  useGetAllAdminJobs(); // 🔥 fetch all admin jobs on component mount
+  useGetAllAdminJobs(); // 🔥 This MUST be here to trigger the sync
   const navigate = useNavigate();
-  const [search, setSearch] = useState(""); // 🔥 filter state
+  const [search, setSearch] = useState("");
 
   return (
     <div>
       <Navbar />
-      <div className="max-w-6xl mx-auto my-10">
-        <div className="flex items-center justify-between my-5">
-          {/* ✅ ONLY FILTER (TOP) */}
+      <div className='max-w-6xl mx-auto my-10'>
+        <div className='flex items-center justify-between my-5'>
           <Input
             className="w-fit"
             placeholder="Filter by name"
-            value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          <Button onClick={() => navigate("/admin/jobs/create")}>
-            New Jobs
-          </Button>
+          <Button onClick={() => navigate("/admin/jobs/create")}>New Jobs</Button>
         </div>
-
-        {/* 🔥 PASS FILTER TO TABLE */}
-        {/* <CompaniesTable search={search} /> */}
-        <AdminJobsTable />
+        <AdminJobsTable search={search}/>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminJobs;
+export default AdminJobs

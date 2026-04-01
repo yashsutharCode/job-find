@@ -27,10 +27,14 @@ const category = [
 const CategoryCarousel = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-   const searchJobHandler = (query) => {
-          dispatch(setSearchedQuery(query));
-          navigate("/browse");
-      };
+
+ const searchJobHandler = (query) => {
+  // 🔥 FIX: only take first word (Frontend, Backend, etc.)
+  const cleanQuery = query.toLowerCase().split(" ")[0];
+
+  dispatch(setSearchedQuery(cleanQuery));
+  navigate("/browse");
+};
   return (
     <div>
       <Carousel className="w-full max-w-xl mx-auto my-20">

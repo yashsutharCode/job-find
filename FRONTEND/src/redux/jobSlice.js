@@ -6,11 +6,10 @@ const jobSlice = createSlice({
         allJobs: [],
         allAdminJobs: [],
         singleJob: null,
-        allAppliedJobs: [], // Initialized as array to prevent .length errors
+        allAppliedJobs: [], 
         searchedQuery: "",
     },
     reducers: {
-        // actions
         setAllJobs: (state, action) => {
             state.allJobs = action.payload;
         },
@@ -21,6 +20,7 @@ const jobSlice = createSlice({
             state.allAdminJobs = action.payload;
         },
         setAllAppliedJobs: (state, action) => {
+            // ✅ This correctly replaces the old state with the new data
             state.allAppliedJobs = action.payload;
         },
         setSearchedQuery: (state, action) => {

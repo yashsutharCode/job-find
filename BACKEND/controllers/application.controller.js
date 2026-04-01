@@ -13,17 +13,15 @@ export const applyJob = async (req, res) => {
             });
         };
 
-        // check if the user has already applied for the job
         const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
 
         if (existingApplication) {
             return res.status(400).json({
-                message: "You have already applied for this jobs",
+                message: "You have already applied for this job",
                 success: false
             });
         }
 
-        // check if the jobs exists
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({
@@ -32,7 +30,6 @@ export const applyJob = async (req, res) => {
             })
         }
 
-        // create a new application
         const newApplication = await Application.create({
             job: jobId,
             applicant: userId,
@@ -48,6 +45,7 @@ export const applyJob = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Server Error", success: false });
     }
 };
 
@@ -63,23 +61,24 @@ export const getAppliedJobs = async (req, res) => {
             }
         });
 
-        if (!application) {
-            return res.status(404).json({
-                message: "No Applications",
-                success: false
+        // ✅ If no applications exist, send empty array to reset frontend
+        if (!application || application.length === 0) {
+            return res.status(200).json({
+                application: [], 
+                success: true
             })
         };
 
         return res.status(200).json({
-            application,
+            application, // ✅ This key 'application' matches the hook
             success: true
         })
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ message: "Server Error", success: false });
     }
 }
 
-// admin dekhega kitna user ne apply kiya hai
 export const getApplicants = async (req, res) => {
     try {
         const jobId = req.params.id;
@@ -120,7 +119,6 @@ export const updateStatus = async (req, res) => {
             })
         };
 
-        // find the application by applicantion id
         const application = await Application.findOne({ _id: applicationId });
         if (!application) {
             return res.status(404).json({
@@ -129,7 +127,6 @@ export const updateStatus = async (req, res) => {
             })
         };
 
-        // update the status
         application.status = status.toLowerCase();
         await application.save();
 
