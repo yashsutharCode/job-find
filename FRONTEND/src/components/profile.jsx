@@ -81,10 +81,7 @@ const Profile = () => {
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto bg-white rounded-2xl p-8 border border-gray-200 shadow-sm mb-10">
-                <h1 className="font-bold text-xl mb-5">Applied Jobs History</h1>
-                <AppliedJobTable />
-            </div>
+        
 
             <UpdateProfileDialog open={open} setOpen={setOpen} />
         </div>

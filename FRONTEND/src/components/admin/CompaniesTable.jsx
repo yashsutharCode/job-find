@@ -10,7 +10,7 @@ import {
 } from "../ui/table";
 import { Avatar, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Edit2, MoreHorizontal } from "lucide-react";
+import { Edit2, MoreHorizontal, MapPin } from "lucide-react"; // Added MapPin icon
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +32,7 @@ const CompaniesTable = ({ search }) => {
           <TableRow>
             <TableHead>Logo</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Location</TableHead> {/* Added Location Header */}
             <TableHead>Date</TableHead>
             <TableHead className="text-right">Action</TableHead>
           </TableRow>
@@ -40,7 +41,8 @@ const CompaniesTable = ({ search }) => {
         <TableBody>
           {filteredCompanies?.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
+              {/* Increased colSpan to 5 to account for the new column */}
+              <TableCell colSpan={5} className="text-center">
                 No companies found.
               </TableCell>
             </TableRow>
@@ -61,7 +63,19 @@ const CompaniesTable = ({ search }) => {
                 </TableCell>
 
                 {/* NAME */}
-                <TableCell>{company.name}</TableCell>
+                <TableCell className="font-medium">{company.name}</TableCell>
+
+                {/* LOCATION */}
+                <TableCell>
+                  {company.location ? (
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3 text-gray-500" />
+                      <span>{company.location}</span>
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 italic">Not set</span>
+                  )}
+                </TableCell>
 
                 {/* DATE */}
                 <TableCell>
@@ -80,7 +94,7 @@ const CompaniesTable = ({ search }) => {
                         onClick={() =>
                           navigate(`/admin/companies/${company._id}`)
                         }
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-all"
                       >
                         <Edit2 className="w-4" />
                         <span>Edit</span>
