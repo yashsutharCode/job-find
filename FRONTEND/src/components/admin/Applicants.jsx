@@ -4,41 +4,49 @@ import ApplicantsTable from './ApplicantsTable'
 import axios from 'axios'
 import { APPLICATION_API_END_POINT } from '@/utils/constant'
 import { useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux' // ✅ Added useSelector
+import { useDispatch, useSelector } from 'react-redux'
 import { setAllApplicants } from '@/redux/applicationSlice'
 
 const Applicants = () => {
     const params = useParams();
     const dispatch = useDispatch();
-    
-    // ✅ Changed 'Applicants' to lowercase 'applicants' to match your applicationSlice.js
     const { applicants } = useSelector(store => store.application);
 
     useEffect(() => {
         const fetchAllApplicants = async () => {
             try {
                 const res = await axios.get(`${APPLICATION_API_END_POINT}/${params.id}/applicants`, { withCredentials: true });
-                // Note: Ensure res.data.job matches the expected structure in your slice
-                dispatch(setAllApplicants(res.data.job));
+                if (res.data.success) {
+                    dispatch(setAllApplicants(res.data.applications));
+                }
             } catch (error) {
-                console.log(error);
+                console.log("Error fetching applicants:", error);
             }
         }
         fetchAllApplicants();
-    }, [params.id, dispatch]); // ✅ Added dependency array for safety
+    }, [params.id, dispatch]);
 
     return (
-        <div>
+        <div className='min-h-screen bg-gray-50 pb-10'>
             <Navbar />
-            <div className='max-w-7xl mx-auto px-4'>
-                {/* ✅ Updated to lowercase 'applicants' and matching your data structure */}
-                <h1 className='font-bold text-xl my-5'>
-                    Applicants ({applicants?.applications?.length || 0})
-                </h1>
+            {/* CHANGE: Updated max-w-4xl to max-w-6xl 
+               This matches the width of your Companies and Jobs pages 
+            */}
+            <div className='max-w-6xl mx-auto my-10 px-4'>
+                <div className='my-5'>
+                    <h1 className='font-bold text-2xl text-gray-800'>
+                        Applicants ({applicants?.length || 0})
+                    </h1>
+                    <p className='text-sm text-gray-500 mt-1'>
+                        Detailed candidate list click on resume to view the resume of the candidate.
+                    </p>
+                </div>
+                
+                {/* The table will now stretch to fill the 6xl container */}
                 <ApplicantsTable />
             </div>
         </div>
     )
 }
 
-export default Applicants
+export default Applicants;

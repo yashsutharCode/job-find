@@ -10,18 +10,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useSelector, useDispatch } from "react-redux";
 import { setCompanies } from "@/redux/companySlice";
-import useGetCompanyById from "@/hooks/useGetCompanyById"; // ✅ IMPORT
+import useGetCompanyById from "@/hooks/useGetCompanyById";
 
 const CompanySetup = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ FETCH COMPANY BY ID
   useGetCompanyById(params.id);
-
   const { singleCompany } = useSelector((store) => store.company);
-
   const [loading, setLoading] = useState(false);
 
   const [input, setInput] = useState({
@@ -32,7 +29,6 @@ const CompanySetup = () => {
     file: null,
   });
 
-  // ✅ FILL FORM WHEN DATA COMES
   useEffect(() => {
     if (singleCompany) {
       setInput({
@@ -56,48 +52,27 @@ const CompanySetup = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
     const formData = new FormData();
     formData.append("name", input.name);
     formData.append("description", input.description);
     formData.append("website", input.website);
     formData.append("location", input.location);
-
-    if (input.file) {
-      formData.append("file", input.file);
-    }
+    if (input.file) formData.append("file", input.file);
 
     try {
       setLoading(true);
-
-      const res = await axios.put(
-        `${COMPANY_API_END_POINT}/update/${params.id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.put(`${COMPANY_API_END_POINT}/update/${params.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         toast.success(res.data.message);
-
-        // 🔥 REFRESH COMPANY LIST
-        const updated = await axios.get(
-          `${COMPANY_API_END_POINT}/get`,
-          {
-            withCredentials: true,
-          }
-        );
-
+        const updated = await axios.get(`${COMPANY_API_END_POINT}/get`, { withCredentials: true });
         dispatch(setCompanies(updated.data.companies));
-
         navigate("/admin/companies");
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
@@ -105,84 +80,53 @@ const CompanySetup = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-xl mx-auto my-10">
-        <form onSubmit={submitHandler}>
-          <div className="flex items-center gap-5 p-8">
+      <div className="max-w-2xl mx-auto my-10 px-4">
+        <form onSubmit={submitHandler} className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 md:p-8">
+          <div className="flex items-center gap-4 mb-10">
             <Button
               type="button"
               onClick={() => navigate("/admin/companies")}
-              variant="outline"
-              className="flex items-center gap-2 text-gray-500 font-semibold"
+              variant="ghost"
+              className="flex items-center gap-2 text-gray-500 hover:text-gray-800 font-semibold"
             >
-              <ArrowLeft />
-              <span>Back</span>
+              <ArrowLeft size={18} />
+              <span className="hidden sm:inline">Back</span>
             </Button>
-
-            <h1 className="font-bold text-xl">Company Setup</h1>
+            <h1 className="font-bold text-xl md:text-2xl text-gray-800">Company Setup</h1>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          {/* Grid: 1 column on mobile, 2 columns on medium screens */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
               <Label>Company Name</Label>
-              <Input
-                type="text"
-                name="name"
-                value={input.name}
-                onChange={changeEventHandler}
-              />
+              <Input type="text" name="name" value={input.name} onChange={changeEventHandler} />
             </div>
-
-            <div>
+            <div className="space-y-2">
               <Label>Description</Label>
-              <Input
-                type="text"
-                name="description"
-                value={input.description}
-                onChange={changeEventHandler}
-              />
+              <Input type="text" name="description" value={input.description} onChange={changeEventHandler} />
             </div>
-
-            <div>
+            <div className="space-y-2">
               <Label>Website</Label>
-              <Input
-                type="text"
-                name="website"
-                value={input.website}
-                onChange={changeEventHandler}
-              />
+              <Input type="text" name="website" value={input.website} onChange={changeEventHandler} />
             </div>
-
-            <div>
+            <div className="space-y-2">
               <Label>Location</Label>
-              <Input
-                type="text"
-                name="location"
-                value={input.location}
-                onChange={changeEventHandler}
-              />
+              <Input type="text" name="location" value={input.location} onChange={changeEventHandler} />
             </div>
-
-            <div>
+            <div className="space-y-2 md:col-span-2">
               <Label>Logo</Label>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={changeFileHandler}
-              />
+              <Input type="file" accept="image/*" onChange={changeFileHandler} className="cursor-pointer" />
             </div>
           </div>
 
           {loading ? (
-            <Button className="w-full my-4">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
+            <Button disabled className="w-full mt-8 bg-[#6A38C2]">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please wait
             </Button>
           ) : (
-            <Button type="submit" className="w-full my-4">
-              Update
-            </Button>
+            <Button type="submit" className="w-full mt-8 bg-[#6A38C2] hover:bg-[#5b30a6]">Update</Button>
           )}
         </form>
       </div>

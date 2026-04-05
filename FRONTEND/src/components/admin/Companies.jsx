@@ -4,30 +4,32 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import CompaniesTable from "./CompaniesTable";
 import { useNavigate } from "react-router-dom";
-import useGetAllCompanies from "@/hooks/useGetAllCompanies"; // Import added
+import useGetAllCompanies from "@/hooks/useGetAllCompanies";
 
 const Companies = () => {
-  useGetAllCompanies(); // 🔥 Added: Syncs Redux state with your (now empty) MongoDB
+  useGetAllCompanies(); 
   const navigate = useNavigate();
   const [search, setSearch] = useState(""); 
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-6xl mx-auto my-10">
-        <div className="flex items-center justify-between my-5">
+      <div className="max-w-6xl mx-auto my-10 px-4">
+        {/* Responsive Header: Stacks on mobile, side-by-side on md+ */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 my-5">
           <Input
-            className="w-fit"
+            className="w-full md:w-fit bg-white"
             placeholder="Filter by name"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-
-          <Button onClick={() => navigate("/admin/companies/create")}>
+          <Button 
+            className="w-full md:w-auto bg-[#6A38C2] hover:bg-[#5b30a6]" 
+            onClick={() => navigate("/admin/companies/create")}
+          >
             New Company
           </Button>
         </div>
-
         <CompaniesTable search={search} />
       </div>
     </div>

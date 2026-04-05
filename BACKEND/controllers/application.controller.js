@@ -52,61 +52,59 @@ export const applyJob = async (req, res) => {
 export const getAppliedJobs = async (req, res) => {
     try {
         const userId = req.id;
-        const application = await Application.find({ applicant: userId }).sort({ createdAt: -1 }).populate({
-            path: 'job',
-            options: { sort: { createdAt: -1 } },
-            populate: {
-                path: 'company',
+        const application = await Application.find({ applicant: userId })
+            .sort({ createdAt: -1 })
+            .populate({
+                path: 'job',
                 options: { sort: { createdAt: -1 } },
-            }
-        });
+                populate: {
+                    path: 'company',
+                    options: { sort: { createdAt: -1 } },
+                }
+            });
 
-        // ✅ If no applications exist, send empty array to reset frontend
         if (!application || application.length === 0) {
             return res.status(200).json({
-                application: [], 
+                application: [], // ✅ Sends empty array to reset frontend state
                 success: true
-            })
-        };
+            });
+        }
 
         return res.status(200).json({
-            application, // ✅ This key 'application' matches the hook
+            application, // ✅ Key 'application' must match the hook's dispatch
             success: true
-        })
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Server Error", success: false });
     }
-}
-
+};
 export const getApplicants = async (req, res) => {
     try {
-        const jobId = req.params.id;
-        const job = await Job.findById(jobId).populate({
-            path: 'applications',
-            options: { sort: { createdAt: -1 } },
-            populate: {
-                path: 'applicant'
-            }
-        });
+        const adminId = req.id;
 
-        if (!job) {
-            return res.status(404).json({
-                message: 'Job not found.',
-                success: false
-            })
-        };
+        // get all jobs created by recruiter
+        const jobs = await Job.find({ created_by: adminId });
+
+        const jobIds = jobs.map(job => job._id);
+
+        // 🔥 MAIN FIX HERE
+        const applications = await Application.find({
+            job: { $in: jobIds }
+        })
+            .populate("applicant") // user info
+            .populate("job")       // 🔥 THIS LINE YOU ASKED
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({
-            job,
+            applications,
             success: true
         });
 
     } catch (error) {
         console.log(error);
     }
-}
-
+};
 export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;

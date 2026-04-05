@@ -18,9 +18,8 @@ const Jobs = () => {
           job?.description?.toLowerCase().includes(query) ||
           job?.location?.toLowerCase().includes(query) ||
           String(job?.salary).toLowerCase().includes(query) ||
-          // ✅ FIX
           job?.jobType?.toLowerCase().includes(query.split(" ")[0]) ||
-          job?.requirements?.join(" ").toLowerCase().includes(query)
+          job?.requirements?.some(req => req.toLowerCase().includes(query))
         );
       });
       setFilterJobs(filteredJobs);
@@ -30,36 +29,39 @@ const Jobs = () => {
   }, [allJobs, searchedQuery]);
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="max-w-7xl mx-auto mt-5 px-4">
-        <div className="flex gap-5">
-          <div className="w-[20%]">
+      <div className="max-w-7xl mx-auto mt-5 px-4 lg:px-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar - Adjusts width based on screen size */}
+          <div className="w-full md:w-1/4 lg:w-1/5">
             <FilterCard />
           </div>
-          {filterJobs.length <= 0 ? (
-            <div className="flex-1 text-center font-bold text-gray-500">
-              Job not found
-            </div>
-          ) : (
-            <div className="flex-1 h-[88vh] overflow-y-auto pb-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+          {/* Job List Container */}
+          <div className="flex-1 h-screen overflow-y-auto pb-20 no-scrollbar">
+            {filterJobs.length <= 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <span className="text-xl font-semibold italic">No jobs found matching your criteria.</span>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6 pr-2">
                 <AnimatePresence>
                   {filterJobs.map((job) => (
                     <motion.div
-                      initial={{ opacity: 0, x: 100 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -100 }}
-                      transition={{ duration: 0.3 }}
                       key={job?._id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3 }}
                     >
                       <Job job={job} />
                     </motion.div>
                   ))}
                 </AnimatePresence>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

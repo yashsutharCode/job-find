@@ -3,10 +3,10 @@ import { createSlice } from "@reduxjs/toolkit";
 const applicationSlice = createSlice({
     name: 'application',
     initialState: {
-        applicants: [],
+        // Initialize as an empty array to prevent .map() errors
+        applicants: [], 
     },
     reducers: {
-        // setAllApplicants is used to store the list of applicants for a specific job
         setAllApplicants: (state, action) => {
             state.applicants = action.payload;
         }
