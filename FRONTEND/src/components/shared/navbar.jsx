@@ -32,14 +32,14 @@ const Navbar = () => {
         }
     };
 
-    const handleApplicantsClick = () => {
-        if (singleJob?._id) {
-            navigate(`/admin/jobs/${singleJob._id}/applicants`);
-        } else {
-            toast.error("Select a job from the list first.");
-            navigate("/admin/jobs");
-        }
-    };
+ const handleApplicantsClick = () => {
+    if (singleJob?._id) {
+        navigate(`/admin/jobs/${singleJob._id}/applicants`);
+    } else {
+        toast.error("Select a job from the list first.");
+        navigate("/admin/jobs"); // This is why you keep seeing "Admin Jobs"
+    }
+};
 
     // Shared navigation links based on role
     const NavLinks = () => (
