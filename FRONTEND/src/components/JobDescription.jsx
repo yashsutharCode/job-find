@@ -8,7 +8,7 @@ import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { Calendar, MapPin, Briefcase, IndianRupee, Users } from "lucide-react";
-import Navbar from "./shared/Navbar";
+import Navbar from "./shared/navbar";
 
 const JobDescription = () => {
     const { id: jobId } = useParams();

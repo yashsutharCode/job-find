@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from './shared/Navbar'
+import Navbar from './shared/navbar'
 import AppliedJobTable from './AppliedJobTable'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 

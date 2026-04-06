@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import Navbar from "./shared/Navbar";
+import Navbar from "./shared/navbar";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Contact, Mail, Pen, FileText, Briefcase, Info } from "lucide-react";
