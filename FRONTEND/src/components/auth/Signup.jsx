@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../shared/Navbar.jsx";
+import Navbar from "../shared/navbar.jsx";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { RadioGroup } from "../ui/radio-group";
