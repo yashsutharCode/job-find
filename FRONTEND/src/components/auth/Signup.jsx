@@ -11,7 +11,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../../redux/authSlice";
 import { Loader2 } from "lucide-react";
 
-const USER_API_END_POINT = "http://localhost:8000/api/v1/user";
+// 1. IMPORT the dynamic constant
+import { USER_API_END_POINT } from "../../utils/constant"; 
+
+// 2. REMOVE/DELETE this line below:
+// const USER_API_END_POINT = "http://localhost:8000/api/v1/user"; 
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -37,6 +41,9 @@ const Signup = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        
+        if (!input.role) return toast.error("Please select a role");
+
         const formData = new FormData();
         formData.append("fullname", input.fullname);
         formData.append("email", input.email);
@@ -47,6 +54,7 @@ const Signup = () => {
 
         try {
             dispatch(setLoading(true));
+            // 3. This now uses the correct URL for any device
             const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
                 withCredentials: true,
@@ -56,6 +64,7 @@ const Signup = () => {
                 navigate("/login");
             }
         } catch (error) {
+            console.error("Signup Error:", error);
             toast.error(error?.response?.data?.message || "Signup failed");
         } finally {
             dispatch(setLoading(false));
@@ -69,9 +78,7 @@ const Signup = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             <Navbar />
-            {/* Added px-4 to container for mobile breathing room */}
             <div className="flex items-center justify-center max-w-7xl mx-auto px-4">
-                {/* Fixed width: Full on mobile, half on tablet, 1/3 on desktop */}
                 <form
                     onSubmit={submitHandler}
                     className="w-full md:w-1/2 lg:w-1/3 bg-white border border-gray-200 rounded-2xl p-6 md:p-8 my-10 shadow-sm"
@@ -81,19 +88,19 @@ const Signup = () => {
                     <div className="space-y-4">
                         <div>
                             <Label>Full Name</Label>
-                            <Input type="text" value={input.fullname} onChange={changeEventHandler} name="fullname" placeholder="John Doe" />
+                            <Input type="text" value={input.fullname} onChange={changeEventHandler} name="fullname" placeholder="John Doe" required />
                         </div>
                         <div>
                             <Label>Email</Label>
-                            <Input type="email" value={input.email} onChange={changeEventHandler} name="email" placeholder="patel@gmail.com" />
+                            <Input type="email" value={input.email} onChange={changeEventHandler} name="email" placeholder="yash@gmail.com" required />
                         </div>
                         <div>
                             <Label>Phone Number</Label>
-                            <Input type="text" value={input.phoneNumber} onChange={changeEventHandler} name="phoneNumber" placeholder="8080808080" />
+                            <Input type="text" value={input.phoneNumber} onChange={changeEventHandler} name="phoneNumber" placeholder="8080808080" required />
                         </div>
                         <div>
                             <Label>Password</Label>
-                            <Input type="password" value={input.password} onChange={changeEventHandler} name="password" placeholder="password" />
+                            <Input type="password" value={input.password} onChange={changeEventHandler} name="password" placeholder="password" required />
                         </div>
 
                         <RadioGroup className="flex items-center gap-6 py-2">
