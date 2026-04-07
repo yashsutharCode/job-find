@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink } from "lucide-react"; // Added ExternalLink icon
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -54,6 +54,8 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         formData.append("phoneNumber", input.phoneNumber);
         formData.append("bio", input.bio);
         formData.append("skills", input.skills);
+        
+        // Ensure the key matches what your backend 'multer' is looking for (usually "file")
         if (input.file) formData.append("file", input.file);
 
         try {
@@ -67,6 +69,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                 setOpen(false);
             }
         } catch (error) {
+            console.error("Update Error:", error);
             toast.error(error.response?.data?.message || "Profile update failed");
         } finally {
             setLoading(false);
@@ -117,10 +120,26 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                             <Input 
                                 id="file" 
                                 type="file" 
+                                name="file"
                                 accept="image/*, application/pdf" 
                                 onChange={fileChangeHandler} 
                                 className="h-9 border-gray-200 text-xs file:bg-gray-100 file:border-none file:text-[10px] file:font-bold file:rounded cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-600" 
                             />
+                            
+                            {/* NEW: Link to view current resume to check for 401/Security errors */}
+                            {user?.profile?.resume && (
+                                <div className="mt-2 flex items-center gap-1">
+                                    <span className="text-[10px] text-gray-500 font-medium italic">Current file:</span>
+                                    <a 
+                                        href={user.profile.resume} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-[10px] text-purple-600 hover:underline flex items-center font-bold"
+                                    >
+                                        View Current <ExternalLink size={10} className="ml-1"/>
+                                    </a>
+                                </div>
+                            )}
                         </div>
                     </div>
 
