@@ -15,6 +15,10 @@ const Profile = () => {
     const { user } = useSelector((store) => store.auth);
 
     const isResume = Boolean(user?.profile?.resume);
+    
+    // Logic for Random Cartoon Profile if no image is uploaded
+    const profilePhoto = user?.profile?.profilePhoto || 
+        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.fullname || 'default'}`;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -22,12 +26,12 @@ const Profile = () => {
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                     
-                    {/* LEFT SIDEBAR */}
+                    {/* LEFT SIDEBAR: Profile Card with Purple Border */}
                     <div className="w-full md:w-1/3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm sticky top-24">
                         <div className="flex flex-col items-center text-center">
-                            <Avatar className="h-28 w-28 border-4 border-white shadow-md mb-4">
+                            <Avatar className="h-28 w-28 border-4 border-purple-600 shadow-md mb-4 bg-gray-100">
                                 <AvatarImage
-                                    src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
+                                    src={profilePhoto}
                                     alt="profile"
                                 />
                             </Avatar>

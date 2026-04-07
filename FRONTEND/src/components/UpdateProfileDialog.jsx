@@ -76,7 +76,7 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent 
-                className="w-[95%] sm:max-w-106.25 bg-white rounded-2xl p-0 overflow-hidden border-none shadow-2xl" 
+                className="w-[95%] sm:max-w-[425px] bg-white rounded-2xl p-0 overflow-hidden border-none shadow-2xl" 
                 onInteractOutside={() => setOpen(false)}
             >
                 <DialogHeader className="px-6 pt-5 pb-3 bg-gray-50 border-b border-gray-100">
@@ -112,12 +112,11 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
 
                         <div className="space-y-1">
                             <Label htmlFor="file" className="font-bold text-gray-700 text-[10px] uppercase ml-1">
-                                Upload Photo or Resume
+                                Upload Photo or Resume (JPG, PNG, PDF)
                             </Label>
                             <Input 
                                 id="file" 
                                 type="file" 
-                                // FIX: Updated to accept both images and PDFs
                                 accept="image/*, application/pdf" 
                                 onChange={fileChangeHandler} 
                                 className="h-9 border-gray-200 text-xs file:bg-gray-100 file:border-none file:text-[10px] file:font-bold file:rounded cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-600" 
