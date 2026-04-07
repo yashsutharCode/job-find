@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Avatar, AvatarImage } from "../ui/avatar";
-import { LogOut, User2, Menu, X } from "lucide-react";
+import { LogOut, User2, Menu, X, Sparkles } from "lucide-react"; // Added Sparkles icon
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
@@ -13,7 +13,7 @@ import { setUser } from "../../redux/authSlice";
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user } = useSelector((store) => store.auth);
-    const { singleJob } = useSelector((store) => store.job); // Pulling singleJob to get the ID
+    const { singleJob } = useSelector((store) => store.job);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -32,7 +32,6 @@ const Navbar = () => {
         }
     };
 
-    // Corrected Click Handler
     const handleApplicantsClick = () => {
         if (singleJob?._id) {
             navigate(`/admin/jobs/${singleJob._id}/applicants`);
@@ -42,7 +41,7 @@ const Navbar = () => {
         }
     };
 
-    // Shared navigation links based on role
+    // Updated NavLinks to include AI highlight for students
     const NavLinks = () => (
         <>
             {user && user.role === "recruiter" ? (
@@ -64,7 +63,14 @@ const Navbar = () => {
                     <li><Link to="/jobs" className="hover:text-[#6A38C2] transition-colors">Jobs</Link></li>
                     <li><Link to="/browse" className="hover:text-[#6A38C2] transition-colors">Browse</Link></li>
                     {user && user.role === "student" && (
-                        <li><Link to="/applied-jobs" className="hover:text-[#6A38C2] transition-colors">Applied</Link></li>
+                        <>
+                            <li><Link to="/applied-jobs" className="hover:text-[#6A38C2] transition-colors">Applied</Link></li>
+                            {/* Added AI Match highlight */}
+                            <li className="flex items-center gap-1 text-[#7209b7] font-bold animate-pulse">
+                                <Sparkles size={16} />
+                                <Link to="/jobs">AI Match</Link>
+                            </li>
+                        </>
                     )}
                 </>
             )}
@@ -75,14 +81,12 @@ const Navbar = () => {
         <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
-                    {/* Logo */}
                     <Link to="/" className="shrink-0">
-                        <h1 className="text-2xl font-extrabold tracking-tight">
+                        <h1 className="text-2xl font-extrabold tracking-tight italic">
                             Job<span className="text-[#F83002]">Portal</span>
                         </h1>
                     </Link>
 
-                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8">
                         <ul className="flex font-medium items-center gap-6 text-gray-600">
                             <NavLinks />
@@ -104,7 +108,6 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-4">
                         {user && <UserPopover user={user} logoutHandler={logoutHandler} />}
                         <button 
@@ -117,9 +120,8 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Navigation Drawer */}
             {isMenuOpen && (
-                <div className="md:hidden bg-white border-b border-gray-100 animate-in slide-in-from-top duration-300">
+                <div className="md:hidden bg-white border-b border-gray-100 animate-in slide-in-from-top duration-300 shadow-lg">
                     <ul className="flex flex-col gap-4 p-5 font-medium text-gray-700">
                         <NavLinks />
                         {!user && (
@@ -139,7 +141,6 @@ const Navbar = () => {
     );
 };
 
-// User Profile Popover Component
 const UserPopover = ({ user, logoutHandler }) => (
     <Popover>
         <PopoverTrigger asChild>
