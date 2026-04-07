@@ -105,7 +105,6 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
                                     type={field.type || "text"}
                                     value={input[field.name || field.id]} 
                                     onChange={changeEventHandler} 
-                                    /* Fixed: Added purple ring/collar and border to match theme */
                                     className="h-9 border-gray-200 text-sm rounded-lg focus-visible:ring-2 focus-visible:ring-purple-600 focus-visible:border-purple-600 transition-all outline-none" 
                                 />
                             </div>
@@ -113,12 +112,13 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
 
                         <div className="space-y-1">
                             <Label htmlFor="file" className="font-bold text-gray-700 text-[10px] uppercase ml-1">
-                                Upload Resume (PDF)
+                                Upload Photo or Resume
                             </Label>
                             <Input 
                                 id="file" 
                                 type="file" 
-                                accept="application/pdf" 
+                                // FIX: Updated to accept both images and PDFs
+                                accept="image/*, application/pdf" 
                                 onChange={fileChangeHandler} 
                                 className="h-9 border-gray-200 text-xs file:bg-gray-100 file:border-none file:text-[10px] file:font-bold file:rounded cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-600" 
                             />

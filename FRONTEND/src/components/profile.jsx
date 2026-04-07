@@ -20,10 +20,9 @@ const Profile = () => {
         <div className="min-h-screen bg-gray-50">
             <Navbar />
             <div className="max-w-6xl mx-auto px-4 py-8">
-                {/* Main Flex Container: Column on mobile, Row on Large Screens */}
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                     
-                    {/* LEFT SIDEBAR: Profile Card (Avatar & Action) */}
+                    {/* LEFT SIDEBAR */}
                     <div className="w-full md:w-1/3 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm sticky top-24">
                         <div className="flex flex-col items-center text-center">
                             <Avatar className="h-28 w-28 border-4 border-white shadow-md mb-4">
@@ -48,9 +47,8 @@ const Profile = () => {
                         </div>
                     </div>
 
-                    {/* RIGHT CONTENT: Bio, Contact, Skills, Resume */}
+                    {/* RIGHT CONTENT */}
                     <div className="flex-1 w-full space-y-6">
-                        {/* Bio Section - Clean Sans-Serif */}
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                             <Label className="flex items-center gap-2 text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em] mb-3">
                                 <Info size={14}/> Professional Bio
@@ -60,9 +58,7 @@ const Profile = () => {
                             </p>
                         </div>
 
-                        {/* Contact & Skills Row */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Contact Card */}
                             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                                 <Label className="text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em] mb-4 block">Contact Details</Label>
                                 <div className="space-y-3">
@@ -77,7 +73,6 @@ const Profile = () => {
                                 </div>
                             </div>
 
-                            {/* Skills Card */}
                             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                                 <Label className="flex items-center gap-2 text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em] mb-4">
                                     <Briefcase size={14}/> Skills & Tools
@@ -96,7 +91,6 @@ const Profile = () => {
                             </div>
                         </div>
 
-                        {/* Resume Card */}
                         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                             <Label className="text-gray-400 font-bold text-[11px] uppercase tracking-[0.2em] mb-4 block">Attached Documents</Label>
                             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-dashed border-gray-300">
