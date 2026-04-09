@@ -128,15 +128,18 @@ const Profile = () => {
                     </span>
                   </div>
                 </div>
-                // Inside Profile.jsx
+
                 {isResume && (
                   <a
-                    href={user?.profile?.resume}
+                    href={user?.profile?.resume?.replace(
+                      "/upload/",
+                      "/upload/f_auto,q_auto/",
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-white border-2 border-gray-600 px-4 py-2 rounded-lg text-gray-800 text-xs font-bold hover:bg-gray-50 transition-all shadow-sm"
                   >
-                    View File
+                    View resume
                   </a>
                 )}
               </div>

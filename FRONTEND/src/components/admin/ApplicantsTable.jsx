@@ -13,9 +13,9 @@ import {
   Check,
   X,
   FileText,
-  Mail,
-  Phone,
   Calendar,
+  Briefcase,
+  Building2,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -59,9 +59,9 @@ const ApplicantsTable = () => {
                   <h2 className="font-bold text-gray-800 text-lg">
                     {item?.applicant?.fullname}
                   </h2>
-                  <p className="text-sm text-blue-600 font-medium">
-                    {item?.job?.title}
-                  </p>
+                  <div className="flex items-center gap-1 text-sm text-blue-600 font-medium">
+                    <Briefcase size={14} /> <span>{item?.job?.title}</span>
+                  </div>
                 </div>
                 <Popover>
                   <PopoverTrigger className="p-2 hover:bg-gray-100 rounded-full">
@@ -88,11 +88,7 @@ const ApplicantsTable = () => {
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-gray-600 text-sm">
-                  <Mail size={14} /> <span>{item?.applicant?.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 text-sm">
-                  <Phone size={14} />{" "}
-                  <span>{item?.applicant?.phoneNumber || "N/A"}</span>
+                  <Building2 size={14} /> <span>{item?.job?.company?.name || "N/A"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-600 text-sm">
                   <Calendar size={14} />{" "}
@@ -102,9 +98,11 @@ const ApplicantsTable = () => {
 
               <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                 {item?.applicant?.profile?.resume ? (
-                  // CORRECTION: Added target="_blank" for browser security
                   <a
-                    href={item?.applicant?.profile?.resume}
+                    href={item?.applicant?.profile?.resume?.replace(
+                      "/upload/",
+                      "/upload/f_auto,q_auto/",
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-blue-600 font-semibold"
@@ -112,22 +110,18 @@ const ApplicantsTable = () => {
                     <FileText size={16} /> Resume
                   </a>
                 ) : (
-                  <span className="text-gray-400 text-sm italic">
-                    No Resume
-                  </span>
+                  <span className="text-gray-400 text-sm italic">No Resume</span>
                 )}
 
                 <Badge
-                  className={`
-                                    text-[10px] font-bold px-3 py-1 rounded-full border-none capitalize
-                                    ${
-                                      item?.status === "accepted"
-                                        ? "bg-green-100 text-green-700"
-                                        : item?.status === "rejected"
-                                          ? "bg-red-100 text-red-700"
-                                          : "bg-gray-100 text-gray-600"
-                                    } 
-                                `}
+                  className={`text-[10px] font-bold px-3 py-1 rounded-full border-none capitalize
+                    ${
+                      item?.status === "accepted"
+                        ? "bg-green-100 text-green-700"
+                        : item?.status === "rejected"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-gray-100 text-gray-600"
+                    }`}
                 >
                   {item?.status || "pending"}
                 </Badge>
@@ -147,8 +141,9 @@ const ApplicantsTable = () => {
           <TableHeader className="bg-gray-50">
             <TableRow>
               <TableHead className="pl-6">Full Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Contact</TableHead>
+              {/* REPLACED Email and Contact with Company and Role */}
+              <TableHead>Company</TableHead>
+              <TableHead>Role</TableHead>
               <TableHead>Resume</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-right pr-6">Action</TableHead>
@@ -164,18 +159,21 @@ const ApplicantsTable = () => {
                   <TableCell className="font-medium pl-6">
                     {item?.applicant?.fullname}
                   </TableCell>
-                  <TableCell>{item?.applicant?.email}</TableCell>
-                  <TableCell>{item?.applicant?.phoneNumber || "N/A"}</TableCell>
-                  // Inside ApplicantsTable.jsx (Desktop View)
+                  {/* DATA MAPPING for Company and Role */}
+                  <TableCell>{item?.job?.company?.name || "N/A"}</TableCell>
+                  <TableCell>{item?.job?.title}</TableCell>
                   <TableCell>
                     {item?.applicant?.profile?.resume ? (
                       <a
-                        href={item?.applicant?.profile?.resume}
+                        href={item?.applicant?.profile?.resume?.replace(
+                          "/upload/",
+                          "/upload/f_auto,q_auto/",
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline flex items-center gap-1"
+                        className="text-blue-600 hover:underline flex items-center gap-1 font-medium"
                       >
-                        <FileText size={16} /> <span>View</span>
+                        <FileText size={16} /> <span>View Resume</span>
                       </a>
                     ) : (
                       <span className="text-gray-400 italic">NA</span>
@@ -186,15 +184,13 @@ const ApplicantsTable = () => {
                     <div className="flex items-center justify-end gap-3">
                       <Badge
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full border-none capitalize
-                                                ${
-                                                  item?.status === "accepted"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : item?.status ===
-                                                        "rejected"
-                                                      ? "bg-red-100 text-red-700"
-                                                      : "bg-gray-100 text-gray-600"
-                                                } 
-                                            `}
+                          ${
+                            item?.status === "accepted"
+                              ? "bg-green-100 text-green-700"
+                              : item?.status === "rejected"
+                                ? "bg-red-100 text-red-700"
+                                : "bg-gray-100 text-gray-600"
+                          }`}
                       >
                         {item?.status || "pending"}
                       </Badge>

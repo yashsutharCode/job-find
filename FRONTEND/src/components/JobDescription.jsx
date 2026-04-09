@@ -2,18 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { JOB_API_END_POINT, APPLICATION_API_END_POINT } from "@/utils/constant";
 import { setSingleJob } from "@/redux/jobSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { Calendar, MapPin, Briefcase, IndianRupee, Users, Sparkles, Target, AlertCircle, Loader2 } from "lucide-react";
+import { Calendar, MapPin, IndianRupee, Users, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import Navbar from "./shared/navbar";
 
 const JobDescription = () => {
     const { id: jobId } = useParams();
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     
     const { singleJob } = useSelector((store) => store.job);
     const { user } = useSelector((store) => store.auth);
@@ -23,13 +22,13 @@ const JobDescription = () => {
     const [aiData, setAiData] = useState(null);
     const [loadingAI, setLoadingAI] = useState(false);
 
-    // CORRECTION: Fixed Data Mapping
     const handleAiMatch = async () => {
         if (!user) return toast.error("Please login first");
         if (!user?.profile?.skills?.length) return toast.error("Please add skills to your profile!");
 
         setLoadingAI(true);
         try {
+            // Using absolute URL for AI Match to ensure reliability across environments
             const res = await axios.post(`https://job-find-8.onrender.com/api/v1/ai/match`, {
                 resumeSkills: user?.profile?.skills?.join(", "),
                 jobDescription: singleJob?.description
@@ -68,11 +67,14 @@ const JobDescription = () => {
                     dispatch(setSingleJob(res.data.job));
                     setApplied(res.data.job.applications.some(app => app.applicant === user?._id));
                 }
-            } catch (e) { console.log(e); }
-            finally { setCheckingStatus(false); }
+            } catch (e) { 
+                console.error(e); 
+            } finally { 
+                setCheckingStatus(false); 
+            }
         };
         fetchJob();
-    }, [jobId, user?._id]);
+    }, [jobId, user?._id, dispatch]);
 
     if (!singleJob) return <div className="h-screen flex items-center justify-center text-gray-400">Loading...</div>;
 
@@ -80,8 +82,6 @@ const JobDescription = () => {
         <div className="min-h-screen bg-gray-50/50 pb-10">
             <Navbar />
             <div className="max-w-4xl mx-auto my-10 px-4">
-                
-                {/* Job Header */}
                 <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm mb-6">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
@@ -95,7 +95,7 @@ const JobDescription = () => {
                         <Button 
                             disabled={isApplied || checkingStatus}
                             onClick={applyJobHandler}
-                            className={`px-8 py-6 rounded-xl font-bold transition-all shadow-md ${isApplied ? "bg-gray-400" : "bg-[#7209b7] hover:bg-[#5f079e]"}`}
+                            className={`px-8 py-6 rounded-xl font-bold transition-all shadow-md ${isApplied ? "bg-gray-400 cursor-not-allowed" : "bg-[#7209b7] hover:bg-[#5f079e]"}`}
                         >
                             {isApplied ? "Applied" : "Apply Now"}
                         </Button>
@@ -103,7 +103,7 @@ const JobDescription = () => {
                 </div>
 
                 {/* AI Smart Match Display */}
-                <div className="bg-linear-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-6 mb-6">
+                <div className="bg-linear-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-6 mb-6 shadow-sm">
                     <div className="flex items-center gap-2 mb-4">
                         <Sparkles className="text-purple-600" size={20} />
                         <h2 className="font-bold text-gray-800">AI Smart Match</h2>
@@ -139,13 +139,12 @@ const JobDescription = () => {
                     )}
                 </div>
 
-                {/* Details Section */}
                 <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
                     <div className="p-8 space-y-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <DetailItem icon={<MapPin size={18}/>} label="Location" value={singleJob.location} />
                             <DetailItem icon={<IndianRupee size={18}/>} label="Salary" value={`${singleJob.salary} LPA`} />
-                            <DetailItem icon={<Users size={18}/>} label="Applicants" value={singleJob.applications.length} />
+                            <DetailItem icon={<Users size={18}/>} label="Applicants" value={singleJob.applications?.length || 0} />
                             <DetailItem icon={<Calendar size={18}/>} label="Posted" value={new Date(singleJob.createdAt).toLocaleDateString()} />
                         </div>
                         <div className="pt-8 border-t border-gray-100">

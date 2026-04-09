@@ -19,27 +19,38 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// PRODUCTION CORS FIX
+// MULTI-ORIGIN CORS FIX
+// Allows local testing (localhost:5173) and production (onrender.com)
 const corsOptions = {
-    origin: process.env.NODE_ENV === "production" 
-        ? "https://job-find-8.onrender.com" 
-        : "http://localhost:5173",
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            "http://localhost:5173",
+            "https://job-find-8.onrender.com"
+        ];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 };
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
-// Routes
+// API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 app.use("/api/v1/ai", aiRoute);
 
-// Serving Static Frontend
+// Serving Static Frontend Files
 app.use(express.static(path.join(_dirname, "/FRONTEND/dist")));
 
+// SPA Routing: Redirect all non-API requests to index.html
 app.get(/^\/(?!api).*/, (req, res) => {
     res.sendFile(path.resolve(_dirname, "FRONTEND", "dist", "index.html"));
 });

@@ -1,6 +1,7 @@
 import { Application } from "../models/application.model.js";
 import { Job } from "../models/job.model.js";
 
+// --- APPLY FOR A JOB ---
 export const applyJob = async (req, res) => {
     try {
         const userId = req.id;
@@ -11,8 +12,9 @@ export const applyJob = async (req, res) => {
                 message: "Job id is required.",
                 success: false
             });
-        };
+        }
 
+        // Check if the user has already applied for this job
         const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
 
         if (existingApplication) {
@@ -22,78 +24,87 @@ export const applyJob = async (req, res) => {
             });
         }
 
+        // Check if the job exists
         const job = await Job.findById(jobId);
         if (!job) {
             return res.status(404).json({
                 message: "Job not found",
                 success: false
-            })
+            });
         }
 
+        // Create the new application
         const newApplication = await Application.create({
             job: jobId,
             applicant: userId,
         });
 
+        // Push the application ID into the job's application array
         job.applications.push(newApplication._id);
         await job.save();
 
         return res.status(201).json({
             message: "Job applied successfully.",
             success: true
-        })
+        });
 
     } catch (error) {
-        console.log(error);
+        console.error("Error in applyJob:", error);
         return res.status(500).json({ message: "Server Error", success: false });
     }
 };
 
+// --- GET JOBS APPLIED BY USER ---
 export const getAppliedJobs = async (req, res) => {
     try {
         const userId = req.id;
+        // Populate job details and nested company details
         const application = await Application.find({ applicant: userId })
             .sort({ createdAt: -1 })
             .populate({
                 path: 'job',
-                options: { sort: { createdAt: -1 } },
                 populate: {
                     path: 'company',
-                    options: { sort: { createdAt: -1 } },
                 }
             });
 
         if (!application || application.length === 0) {
             return res.status(200).json({
-                application: [], // ✅ Sends empty array to reset frontend state
+                application: [], 
                 success: true
             });
         }
 
         return res.status(200).json({
-            application, // ✅ Key 'application' must match the hook's dispatch
+            application, 
             success: true
         });
     } catch (error) {
-        console.log(error);
+        console.error("Error in getAppliedJobs:", error);
         return res.status(500).json({ message: "Server Error", success: false });
     }
 };
+
+// --- GET ALL APPLICANTS (Admin/Recruiter View) ---
 export const getApplicants = async (req, res) => {
     try {
         const adminId = req.id;
 
-        // get all jobs created by recruiter
+        // 1. Find all jobs created by this specific recruiter
         const jobs = await Job.find({ created_by: adminId });
-
         const jobIds = jobs.map(job => job._id);
 
-        // 🔥 MAIN FIX HERE
+        // 2. Find applications for those specific jobs
         const applications = await Application.find({
             job: { $in: jobIds }
         })
-            .populate("applicant") // user info
-            .populate("job")       // 🔥 THIS LINE YOU ASKED
+            .populate("applicant") // Get user profile details
+            .populate({
+                path: "job",
+                populate: {
+                    path: "company" // 🔥 CRITICAL: Allows frontend to access item.job.company.name
+                }
+            })
             .sort({ createdAt: -1 });
 
         return res.status(200).json({
@@ -102,9 +113,12 @@ export const getApplicants = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error("Error in getApplicants:", error);
+        return res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
+
+// --- UPDATE APPLICATION STATUS (Admin Only) ---
 export const updateStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -112,19 +126,21 @@ export const updateStatus = async (req, res) => {
 
         if (!status) {
             return res.status(400).json({
-                message: 'status is required',
+                message: 'Status is required',
                 success: false
-            })
-        };
+            });
+        }
 
-        const application = await Application.findOne({ _id: applicationId });
+        // Find application by ID
+        const application = await Application.findById(applicationId);
         if (!application) {
             return res.status(404).json({
                 message: "Application not found.",
                 success: false
-            })
-        };
+            });
+        }
 
+        // Update status (Accepted/Rejected/Pending)
         application.status = status.toLowerCase();
         await application.save();
 
@@ -134,6 +150,7 @@ export const updateStatus = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
+        console.error("Error in updateStatus:", error);
+        return res.status(500).json({ message: "Server Error", success: false });
     }
-}
+};

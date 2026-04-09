@@ -78,7 +78,7 @@ export const updateProfile = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, bio, skills } = req.body;
         const file = req.file;
-        const userId = req.id; 
+        const userId = req.id;
 
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -88,21 +88,23 @@ export const updateProfile = async (req, res) => {
         if (phoneNumber) user.phoneNumber = phoneNumber;
         if (bio) user.profile.bio = bio;
         if (skills) user.profile.skills = skills.split(",").map(s => s.trim());
-
-        if (file) {
-            const fileUri = getDataUri(file);
-            // CORRECTION: resource_type: "auto" is mandatory for PDFs to be accessible via secure_url
+        // Inside your updateProfile controller on the backend:
+        if (req.file) {
+            const fileUri = getDataUri(req.file);
             const cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
-                resource_type: "auto" 
-            }); 
+                resource_type: "raw", // CRITICAL for PDF files
+                format: "pdf",
+            });
+
+            // Ensure you save the secure_url
             user.profile.resume = cloudResponse.secure_url;
-            user.profile.resumeOriginalName = file.originalname;
+            user.profile.resumeOriginalName = req.file.originalname;
         }
 
         await user.save();
         return res.status(200).json({
-            success: true, 
-            message: "Profile updated", 
+            success: true,
+            message: "Profile updated",
             user: { _id: user._id, fullname: user.fullname, email: user.email, role: user.role, profile: user.profile }
         });
     } catch (error) {
