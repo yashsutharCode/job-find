@@ -23,8 +23,11 @@ export const getMatchScore = async (req, res) => {
         }
 
         // ✅ Use correct model
+        // const model = genAI.getGenerativeModel({
+        //     model: "gemini-1.5-flash-latest"
+        // });
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash-latest"
+            model: "gemini-pro"
         });
 
         const prompt = `
