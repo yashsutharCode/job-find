@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Ensure the API Key is correctly loaded from the environment
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const getMatchScore = async (req, res) => {
@@ -14,47 +13,38 @@ export const getMatchScore = async (req, res) => {
             });
         }
 
-        // FIX: Use the fully qualified model name
+        // FIX: Ensure you are using the correct model string
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const prompt = `
-            You are an expert HR recruiter. 
-            Compare the User Skills with the Job Requirements.
+            Compare the following User Skills with the Job Requirements.
             User Skills: ${resumeSkills}
             Job Requirements: ${jobDescription}
 
-            Return ONLY a valid JSON object. 
+            Return ONLY a valid JSON object:
             {
-              "score": (number),
+              "score": (number 0-100),
               "feedback": (string),
               "missingSkills": (array)
             }
         `;
 
         const result = await model.generateContent(prompt);
+        // FIX: Wait for the full response before calling .text()
         const response = await result.response;
         const text = response.text();
 
-        // Improved JSON cleaning to handle potential markdown formatting from AI
+        // Extract JSON to handle potential markdown formatting
         const start = text.indexOf('{');
         const end = text.lastIndexOf('}') + 1;
+        const parsedData = JSON.parse(text.substring(start, end));
         
-        if (start === -1 || end === 0) {
-            throw new Error("Invalid AI response format");
-        }
-
-        const jsonString = text.substring(start, end);
-        const parsedData = JSON.parse(jsonString);
-        
-        return res.status(200).json({
-            data: parsedData,
-            success: true
-        });
+        return res.status(200).json({ data: parsedData, success: true });
     } catch (error) {
-        console.error("AI Matching Error:", error);
+        console.error("AI Matching Error:", error.message);
         return res.status(500).json({ 
-            message: "AI Analysis failed. Please check server logs.", 
-            error: error.message,
+            message: "AI Analysis failed.", 
+            error: error.message, 
             success: false 
         });
     }
