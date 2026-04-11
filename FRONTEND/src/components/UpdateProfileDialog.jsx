@@ -9,8 +9,8 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea"; 
-import { Loader2, ExternalLink, Camera } from "lucide-react"; // Added Camera icon
+import { Textarea } from "./ui/textarea";
+import { Loader2, ExternalLink, Camera } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -28,8 +28,8 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     phoneNumber: "",
     bio: "",
     skills: "",
-    file: null,      // For Resume
-    profilePhoto: null, // NEW: For Profile Picture
+    file: null,          // For Resume
+    profilePhoto: null,  // For Profile Image
   });
 
   useEffect(() => {
@@ -37,11 +37,10 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
       setInput({
         fullname: user?.fullname || "",
         email: user?.email || "",
-        // Ensuring we grab the phone number regardless of where it's stored
-        phoneNumber: user?.phoneNumber || user?.profile?.phoneNumber || "", 
+        phoneNumber: user?.profile?.phoneNumber || user?.phoneNumber || "",
         bio: user?.profile?.bio || "",
-        skills: Array.isArray(user?.profile?.skills) 
-          ? user.profile.skills.join(", ") 
+        skills: Array.isArray(user?.profile?.skills)
+          ? user.profile.skills.join(", ")
           : user?.profile?.skills || "",
         file: null,
         profilePhoto: null,
@@ -52,26 +51,16 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
   const changeEventHandler = (e) =>
     setInput({ ...input, [e.target.name]: e.target.value });
 
-  // Handle Resume (PDF)
   const fileChangeHandler = (e) => {
     const file = e.target.files?.[0];
-    if (file && file.type !== "application/pdf") {
-      toast.error("Please upload a PDF file for your resume.");
-      e.target.value = ""; 
-      return;
-    }
-    setInput({ ...input, file });
-  };
+    const name = e.target.name;
 
-  // NEW: Handle Profile Photo (Images)
-  const photoChangeHandler = (e) => {
-    const file = e.target.files?.[0];
-    if (file && !file.type.startsWith("image/")) {
-      toast.error("Please upload an image file (PNG, JPG, etc.)");
+    if (name === "file" && file && file.type !== "application/pdf") {
+      toast.error("Please upload a PDF for your resume.");
       e.target.value = "";
       return;
     }
-    setInput({ ...input, profilePhoto: file });
+    setInput({ ...input, [name]: file });
   };
 
   const submitHandler = async (e) => {
@@ -83,9 +72,9 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("bio", input.bio);
     formData.append("skills", input.skills);
-    
+
     if (input.file) formData.append("file", input.file);
-    if (input.profilePhoto) formData.append("profilePhoto", input.profilePhoto); // Append photo
+    if (input.profilePhoto) formData.append("profilePhoto", input.profilePhoto);
 
     try {
       const res = await axios.post(
@@ -114,43 +103,33 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
         <DialogHeader>
           <DialogTitle className="font-bold text-gray-800">Update Profile</DialogTitle>
           <DialogDescription className="text-xs">
-            Update your career details, photo, and resume.
+            Update your professional details and profile image.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={submitHandler} className="space-y-3">
+        <form onSubmit={submitHandler} className="space-y-4">
           
-          {/* NEW: Profile Photo Input */}
           <div className="space-y-1">
             <Label className="text-[10px] font-bold uppercase text-gray-500 flex items-center gap-1">
               <Camera size={12} /> Profile Photo
             </Label>
             <Input
               type="file"
+              name="profilePhoto"
               accept="image/*"
-              onChange={photoChangeHandler}
+              onChange={fileChangeHandler}
               className="h-9 cursor-pointer"
             />
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-[10px] font-bold uppercase text-gray-500">Full Name</Label>
-            <Input name="fullname" value={input.fullname} onChange={changeEventHandler} className="h-9" />
-          </div>
-
-          <div className="space-y-1">
-            <Label className="text-[10px] font-bold uppercase text-gray-500">Email</Label>
-            <Input type="email" name="email" value={input.email} onChange={changeEventHandler} className="h-9" />
-          </div>
-
-          <div className="space-y-1">
-            <Label className="text-[10px] font-bold uppercase text-gray-500">Phone Number</Label>
-            <Input
-              name="phoneNumber"
-              value={input.phoneNumber}
-              onChange={changeEventHandler}
-              className="h-9"
-              placeholder="+91 7877209020"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-[10px] font-bold uppercase text-gray-500">Full Name</Label>
+              <Input name="fullname" value={input.fullname} onChange={changeEventHandler} className="h-9" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[10px] font-bold uppercase text-gray-500">Phone Number</Label>
+              <Input name="phoneNumber" value={input.phoneNumber} onChange={changeEventHandler} className="h-9" />
+            </div>
           </div>
 
           <div className="space-y-1">
@@ -159,26 +138,16 @@ const UpdateProfileDialog = ({ open, setOpen }) => {
           </div>
 
           <div className="space-y-1">
-            <Label className="text-[10px] font-bold uppercase text-gray-500">Detailed Skills</Label>
-            <Textarea
-              name="skills"
-              value={input.skills}
-              onChange={changeEventHandler}
-              className="min-h-25 text-xs"
-            />
+            <Label className="text-[10px] font-bold uppercase text-gray-500">Skills (Comma separated)</Label>
+            <Textarea name="skills" value={input.skills} onChange={changeEventHandler} className="min-h-20 text-xs" />
           </div>
 
           <div className="space-y-1">
             <Label className="text-[10px] font-bold uppercase text-gray-500">Resume (PDF)</Label>
-            <Input type="file" accept="application/pdf" onChange={fileChangeHandler} className="h-9 cursor-pointer" />
-            {user?.profile?.resume && (
-              <a href={user.profile.resume} target="_blank" rel="noopener noreferrer" className="text-[10px] text-purple-600 font-bold flex items-center hover:underline mt-1">
-                View Current Resume <ExternalLink size={10} className="ml-1" />
-              </a>
-            )}
+            <Input type="file" name="file" accept="application/pdf" onChange={fileChangeHandler} className="h-9 cursor-pointer" />
           </div>
 
-          <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold h-10 rounded-xl mt-4" disabled={loading}>
+          <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold h-10 rounded-xl mt-2" disabled={loading}>
             {loading ? <Loader2 className="animate-spin" size={18} /> : "Save Changes"}
           </Button>
         </form>
