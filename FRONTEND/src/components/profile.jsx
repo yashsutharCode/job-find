@@ -80,9 +80,9 @@ const Profile = () => {
                     <div className="p-2 bg-gray-50 rounded-lg">
                       <Contact size={18} className="text-gray-400" />
                     </div>
-                    <span className="text-sm font-semibold">
+                    {/* <span className="text-sm font-semibold">
                       {user?.phoneNumber || "Not provided"}
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </div>
